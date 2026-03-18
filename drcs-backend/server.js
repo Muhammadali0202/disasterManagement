@@ -3,11 +3,12 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 require('dotenv').config();
 
+// 1. Initialize the App
 const app = express();
 app.use(cors());
-app.use(express.json()); // Parses incoming JSON requests
+app.use(express.json()); // Allows the server to understand form data
 
-// Create MySQL Connection Pool
+// 2. Connect to MySQL Database
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -18,9 +19,11 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// --- API ROUTES ---
+// ==========================================
+//                 API ROUTES
+// ==========================================
 
-// GET: Dashboard Statistics
+// --- GET: Dashboard Statistics ---
 app.get('/api/dashboard/stats', async (req, res) => {
     try {
         const [disasters] = await pool.query('SELECT COUNT(*) AS activeDisasters FROM disasters');
@@ -38,23 +41,32 @@ app.get('/api/dashboard/stats', async (req, res) => {
     }
 });
 
-// GET: Inventory with Camp Names (Using INNER JOIN)
-app.get('/api/inventory', async (req, res) => {
+// --- GET: Dropdown List of Camps ---
+app.get('/api/camps', async (req, res) => {
     try {
-        const query = `
-            SELECT i.item_id, i.category, i.quantity, c.name AS camp_name 
-            FROM inventory i
-            INNER JOIN relief_camps c ON i.camp_id = c.camp_id
-        `;
-        const [rows] = await pool.query(query);
+        const [rows] = await pool.query('SELECT camp_id, name FROM relief_camps');
         res.json(rows);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch inventory' });
+        res.status(500).json({ error: 'Failed to fetch camps' });
     }
 });
 
-// Start Server
+// --- POST: Add a new Volunteer ---
+app.post('/api/volunteers', async (req, res) => {
+    const { name, phone, assigned_camp_id } = req.body;
+    try {
+        const query = 'INSERT INTO volunteers (name, phone, assigned_camp_id) VALUES (?, ?, ?)';
+        await pool.query(query, [name, phone, assigned_camp_id]);
+        res.status(201).json({ message: 'Volunteer added successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to add volunteer. Phone might already exist.' });
+    }
+});
+
+// ==========================================
+//               START SERVER
+// ==========================================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`DRCS Server running on port ${PORT}`);
