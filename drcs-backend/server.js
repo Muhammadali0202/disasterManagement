@@ -6,7 +6,7 @@ require('dotenv').config();
 // 1. Initialize the App
 const app = express();
 app.use(cors());
-app.use(express.json()); // Allows the server to understand form data
+app.use(express.json());
 
 // 2. Connect to MySQL Database
 const pool = mysql.createPool({
@@ -29,7 +29,6 @@ app.get('/api/dashboard/stats', async (req, res) => {
         const [disasters] = await pool.query('SELECT COUNT(*) AS activeDisasters FROM disasters');
         const [camps] = await pool.query('SELECT COUNT(*) AS totalCamps FROM relief_camps');
         const [volunteers] = await pool.query('SELECT COUNT(*) AS activeVolunteers FROM volunteers');
-        
         res.json({
             activeDisasters: disasters[0].activeDisasters,
             totalCamps: camps[0].totalCamps,
@@ -41,26 +40,95 @@ app.get('/api/dashboard/stats', async (req, res) => {
     }
 });
 
-// --- GET: Dropdown List of Camps ---
+// --- GET: Fetch Data for Dropdowns & Lists ---
+
+// 1. Fetch Locations
+app.get('/api/locations', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT location_id, district, city FROM locations');
+        res.json(rows);
+    } catch (error) { 
+        res.status(500).json({ error: 'Failed to fetch locations' }); 
+    }
+});
+
+// 2. Fetch Disasters
+app.get('/api/disasters', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT disaster_id, type, severity FROM disasters');
+        res.json(rows);
+    } catch (error) { 
+        res.status(500).json({ error: 'Failed to fetch disasters' }); 
+    }
+});
+
+// 3. Fetch Camps (Includes a JOIN to get the city name from the locations table)
 app.get('/api/camps', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT camp_id, name FROM relief_camps');
+        const query = `
+            SELECT c.camp_id, c.name, c.capacity, l.city 
+            FROM relief_camps c
+            LEFT JOIN locations l ON c.location_id = l.location_id
+        `;
+        const [rows] = await pool.query(query);
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch camps' });
     }
 });
 
-// --- POST: Add a new Volunteer ---
-app.post('/api/volunteers', async (req, res) => {
-    const { name, phone, assigned_camp_id } = req.body;
+// --- POST: Add New Data ---
+
+// 1. Add a new Disaster
+app.post('/api/disasters', async (req, res) => {
+    const { type, date_occurred, severity, location_id } = req.body;
     try {
-        const query = 'INSERT INTO volunteers (name, phone, assigned_camp_id) VALUES (?, ?, ?)';
-        await pool.query(query, [name, phone, assigned_camp_id]);
+        const query = 'INSERT INTO disasters (type, date_occurred, severity, location_id) VALUES (?, ?, ?, ?)';
+        await pool.query(query, [type, date_occurred, severity, location_id]);
+        res.status(201).json({ message: 'Disaster logged successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to add disaster.' });
+    }
+});
+
+// 2. Add a new Volunteer
+app.post('/api/volunteers', async (req, res) => {
+    const { name, phone, assigned_camp_id, assigned_disaster_id } = req.body;
+    try {
+        const query = 'INSERT INTO volunteers (name, phone, assigned_camp_id, assigned_disaster_id) VALUES (?, ?, ?, ?)';
+        await pool.query(query, [name, phone, assigned_camp_id, assigned_disaster_id || null]);
         res.status(201).json({ message: 'Volunteer added successfully!' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to add volunteer. Phone might already exist.' });
+        res.status(500).json({ error: 'Failed to add volunteer.' });
+    }
+});
+
+// 3. Add a new Relief Camp
+app.post('/api/camps', async (req, res) => {
+    const { name, capacity, location_id } = req.body;
+    try {
+        const query = 'INSERT INTO relief_camps (name, capacity, location_id) VALUES (?, ?, ?)';
+        await pool.query(query, [name, capacity, location_id]);
+        res.status(201).json({ message: 'Camp added successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to add camp.' });
+    }
+});
+
+// --- DELETE: Remove Data ---
+
+// 1. Delete a Relief Camp
+app.delete('/api/camps/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM relief_camps WHERE camp_id = ?', [id]);
+        res.json({ message: 'Camp deleted successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete camp.' });
     }
 });
 

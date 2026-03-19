@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import VolunteerForm from './VolunteerForm';
+import DisasterForm from './DisasterForm';
+import CampManager from './CampManager';
 
 // Reusable StatCard Component
 const StatCard = ({ title, value, color }) => (
@@ -10,14 +12,12 @@ const StatCard = ({ title, value, color }) => (
 );
 
 export default function Dashboard() {
-  // 1. STATE MUST GO FIRST
   const [stats, setStats] = useState({
     activeDisasters: 0,
     totalCamps: 0,
     volunteersActive: 0,
   });
 
-  // 2. THE FETCH FUNCTION MUST GO SECOND
   const fetchStats = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/dashboard/stats');
@@ -30,34 +30,34 @@ export default function Dashboard() {
     }
   };
 
-  // 3. USE-EFFECT GOES THIRD
   useEffect(() => {
     fetchStats();
   }, []);
 
-  // 4. THE UI GOES LAST
   return (
     <div className="min-h-screen bg-gray-50 p-8">
+      {/* Header Area */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">DRCS Command Center</h1>
         <p className="text-gray-600 mt-1">Real-time overview of disaster response operations.</p>
       </div>
 
+      {/* Top Row: KPI Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatCard title="Active Disasters" value={stats.activeDisasters} color="border-red-500" />
         <StatCard title="Relief Camps" value={stats.totalCamps} color="border-blue-500" />
         <StatCard title="Active Volunteers" value={stats.volunteersActive} color="border-green-500" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Your new form! */}
+      {/* Middle Row: Registration & Logging Forms */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <VolunteerForm onAddSuccess={fetchStats} />
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">System Status</h2>
-          <p className="text-gray-600">The React frontend is connected to your MySQL database.</p>
-        </div>
+        <DisasterForm onAddSuccess={fetchStats} />
       </div>
+
+      {/* Bottom Row: The Camp Management Section */}
+      <CampManager onUpdate={fetchStats} /> 
+      
     </div>
   );
 }
