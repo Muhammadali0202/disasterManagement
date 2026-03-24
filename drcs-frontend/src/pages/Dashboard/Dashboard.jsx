@@ -39,7 +39,7 @@ export default function Dashboard({ onLogout, adminName }) {
 
         <nav className="flex-1 mt-6 space-y-2">
           <button onClick={() => setActiveTab('home')} className={navItemClass('home')}>
-            📊 Dashboard Overview
+             Dashboard Overview
           </button>
           
           <div className="px-6 py-2 mt-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -47,13 +47,13 @@ export default function Dashboard({ onLogout, adminName }) {
           </div>
           
           <button onClick={() => setActiveTab('disasters')} className={navItemClass('disasters')}>
-            🚨 Log Disaster
+             Log Disaster
           </button>
           <button onClick={() => setActiveTab('camps')} className={navItemClass('camps')}>
-            ⛺ Manage Camps
+             Manage Camps
           </button>
           <button onClick={() => setActiveTab('volunteers')} className={navItemClass('volunteers')}>
-            🙋 Volunteer Registry
+             Volunteer Registry
           </button>
         </nav>
 
