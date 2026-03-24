@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # 1. The MySQL Database Container
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: drcs_db
+    volumes:
+      # This line runs your init.sql script automatically on the first boot!
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 2. The Node.js Backend Container
+  backend:
+    build: ./drcs-backend
+    ports:
+      - "5000:5000"
+    environment:
+      # Notice how DB_HOST is "db" now, not localhost! Docker handles the networking.
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: drcs_db
+      PORT: 5000
+    depends_on:
+      - db
+
+  # 3. The React Frontend Container
+  frontend:
+    build: ./drcs-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
