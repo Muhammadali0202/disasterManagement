@@ -118,6 +118,41 @@ app.post('/api/camps', async (req, res) => {
     }
 });
 
+// --- POST: Admin Authentication ---
+
+// 1. Admin Signup
+app.post('/api/signup', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const query = 'INSERT INTO admins (username, password) VALUES (?, ?)';
+        await pool.query(query, [username, password]);
+        res.status(201).json({ message: 'Admin account created successfully!' });
+    } catch (error) {
+        // Error 1062 is MySQL's code for a duplicate unique key (username already exists)
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ error: 'Username already exists. Please choose another.' });
+        } else {
+            res.status(500).json({ error: 'Failed to create account.' });
+        }
+    }
+});
+
+// 2. Admin Login
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const [rows] = await pool.query('SELECT * FROM admins WHERE username = ? AND password = ?', [username, password]);
+        
+        if (rows.length > 0) {
+            res.json({ message: 'Login successful', admin: { username: rows[0].username } });
+        } else {
+            res.status(401).json({ error: 'Invalid username or password.' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Server error during login.' });
+    }
+});
+
 // --- DELETE: Remove Data ---
 
 // 1. Delete a Relief Camp
