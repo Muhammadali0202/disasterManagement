@@ -56,4 +56,4 @@ jobs:
       
     - name: Test Docker Compose Build
       # This ensures your Dockerfiles aren't broken!
-      run: docker-compose build
+      run: docker compose build
