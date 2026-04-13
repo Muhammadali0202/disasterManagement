@@ -3,6 +3,8 @@ import DashboardHome from './DashboardHome';
 import VolunteerForm from './VolunteerForm';
 import DisasterForm from './DisasterForm';
 import CampManager from './CampManager';
+import InventoryTracker from './InventoryTracker';
+import SystemLogs from './SystemLogs'; 
 
 export default function Dashboard({ onLogout, adminName }) {
   // This state controls which page is currently visible!
@@ -14,7 +16,9 @@ export default function Dashboard({ onLogout, adminName }) {
       case 'home': return <DashboardHome />;
       case 'disasters': return <DisasterForm />;
       case 'camps': return <CampManager />;
+      case 'inventory': return <InventoryTracker />;
       case 'volunteers': return <VolunteerForm />;
+      case 'logs': return <SystemLogs />;
       default: return <DashboardHome />;
     }
   };
@@ -52,8 +56,17 @@ export default function Dashboard({ onLogout, adminName }) {
           <button onClick={() => setActiveTab('camps')} className={navItemClass('camps')}>
              Manage Camps
           </button>
+          <button onClick={() => setActiveTab('inventory')} className={navItemClass('inventory')}>
+            Logistics & Inventory
+          </button>
           <button onClick={() => setActiveTab('volunteers')} className={navItemClass('volunteers')}>
              Volunteer Registry
+          </button>
+          <div className="px-6 py-2 mt-8 text-xs font-semibold text-red-400 uppercase tracking-wider">
+            Security & Admin
+          </div>
+          <button onClick={() => setActiveTab('logs')} className={navItemClass('logs')}>
+            Audit Logs
           </button>
         </nav>
 
