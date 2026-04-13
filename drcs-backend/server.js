@@ -5,7 +5,15 @@ require('dotenv').config();
 
 // 1. Initialize the App
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [
+        'https://disaster-management-liard-omega.vercel.app', // Your live Vercel frontend
+        'http://localhost:5173', // Keep local access for when you test on your computer
+        'http://localhost:3000'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 app.use(express.json());
 
 // 2. Connect to MySQL Database
