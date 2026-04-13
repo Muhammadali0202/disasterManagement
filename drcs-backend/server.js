@@ -166,7 +166,60 @@ app.delete('/api/camps/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete camp.' });
     }
 });
+// ==========================================
+//        COMPLEX INVENTORY ROUTES (M:N)
+// ==========================================
 
+// 1. Fetch available resource types
+app.get('/api/resources', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM resources');
+        res.json(rows);
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch resources' }); }
+});
+
+// 2. Fetch inventory for a specific camp (Using SQL JOINs)
+app.get('/api/inventory/:camp_id', async (req, res) => {
+    try {
+        const query = `
+            SELECT r.name, r.category, r.unit, ci.quantity, ci.last_updated
+            FROM camp_inventory ci
+            JOIN resources r ON ci.resource_id = r.resource_id
+            WHERE ci.camp_id = ?
+        `;
+        const [rows] = await pool.query(query, [req.params.camp_id]);
+        res.json(rows);
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch inventory' }); }
+});
+
+// 3. Add or Update Inventory (Using "UPSERT" logic)
+app.post('/api/inventory', async (req, res) => {
+    const { camp_id, resource_id, quantity } = req.body;
+    try {
+        // This is complex SQL: If the item exists, add to the quantity. If not, insert it!
+        const query = `
+            INSERT INTO camp_inventory (camp_id, resource_id, quantity)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE quantity = quantity + ?
+        `;
+        await pool.query(query, [camp_id, resource_id, quantity, quantity]);
+        res.status(200).json({ message: 'Inventory updated successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update inventory' });
+    }
+});
+// --- GET: System Audit Logs ---
+app.get('/api/logs', async (req, res) => {
+    try {
+        // Fetch the 50 most recent logs, sorted by newest first
+        const [rows] = await pool.query('SELECT * FROM system_logs ORDER BY action_time DESC LIMIT 50');
+        res.json(rows);
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch audit logs' }); 
+    }
+});
 // ==========================================
 //               START SERVER
 // ==========================================
