@@ -1,0 +1,59 @@
+name: DRCS CI Pipeline
+
+# This tells GitHub WHEN to run this automation
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  # JOB 1: Test the React Frontend
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./drcs-frontend
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        
+    - name: Install Dependencies
+      run: npm install
+      
+    - name: Test Production Build
+      run: npm run build
+
+  # JOB 2: Test the Express Backend
+  backend-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./drcs-backend
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        
+    - name: Install Dependencies
+      run: npm install
+
+  # JOB 3: Test the Docker Containers
+  docker-build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Test Docker Compose Build
+      # This ensures your Dockerfiles aren't broken!
+      run: docker-compose build
