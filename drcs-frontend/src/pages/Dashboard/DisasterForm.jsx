@@ -6,7 +6,7 @@ export default function DisasterForm({ onAddSuccess }) {
   const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/locations')
+    fetch('https://disastermanagement-slc5.onrender.com/api/locations')
       .then(res => res.json())
       .then(data => setLocations(data))
       .catch(err => console.error(err));
@@ -18,7 +18,7 @@ export default function DisasterForm({ onAddSuccess }) {
     e.preventDefault();
     setStatusMessage('Logging disaster...');
     try {
-      const response = await fetch('http://localhost:5000/api/disasters', {
+      const response = await fetch('https://disastermanagement-slc5.onrender.com/api/disasters', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

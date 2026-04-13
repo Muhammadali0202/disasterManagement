@@ -15,13 +15,13 @@ export default function VolunteerForm({ onAddSuccess }) {
 
   useEffect(() => {
     // 1. Fetch Relief Camps
-    fetch('http://localhost:5000/api/camps')
+    fetch('https://disastermanagement-slc5.onrender.com/api/camps')
       .then(res => res.json())
       .then(data => setCamps(data))
       .catch(err => console.error("Could not load camps", err));
 
     // 2. Fetch Active Disasters
-    fetch('http://localhost:5000/api/disasters')
+    fetch('https://disastermanagement-slc5.onrender.com/api/disasters')
       .then(res => res.json())
       .then(data => setDisasters(data))
       .catch(err => console.error("Could not load disasters", err));
@@ -36,7 +36,7 @@ export default function VolunteerForm({ onAddSuccess }) {
     setStatusMessage('Submitting...');
 
     try {
-      const response = await fetch('http://localhost:5000/api/volunteers', {
+      const response = await fetch('https://disastermanagement-slc5.onrender.com/api/volunteers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

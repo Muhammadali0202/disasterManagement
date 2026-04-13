@@ -10,14 +10,14 @@ export default function InventoryTracker() {
 
   // Load Camps and Resources on boot
   useEffect(() => {
-    fetch('http://localhost:5000/api/camps').then(res => res.json()).then(setCamps);
-    fetch('http://localhost:5000/api/resources').then(res => res.json()).then(setResources);
+    fetch('https://disastermanagement-slc5.onrender.com/api/camps').then(res => res.json()).then(setCamps);
+    fetch('https://disastermanagement-slc5.onrender.com/api/resources').then(res => res.json()).then(setResources);
   }, []);
 
   // Load Inventory whenever a new camp is selected
   useEffect(() => {
     if (selectedCamp) {
-      fetch(`http://localhost:5000/api/inventory/${selectedCamp}`)
+      fetch(`https://disastermanagement-slc5.onrender.com/api/inventory/${selectedCamp}`)
         .then(res => res.json())
         .then(setInventory);
     } else {
@@ -29,14 +29,14 @@ export default function InventoryTracker() {
     e.preventDefault();
     if (!selectedCamp) return alert("Please select a camp first!");
 
-    await fetch('http://localhost:5000/api/inventory', {
+    await fetch('https://disastermanagement-slc5.onrender.com/api/inventory', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ camp_id: selectedCamp, ...formData })
     });
 
     // Refresh inventory list and clear form
-    const updated = await fetch(`http://localhost:5000/api/inventory/${selectedCamp}`).then(r => r.json());
+    const updated = await fetch(`https://disastermanagement-slc5.onrender.com/api/inventory/${selectedCamp}`).then(r => r.json());
     setInventory(updated);
     setFormData({ resource_id: '', quantity: '' });
   };

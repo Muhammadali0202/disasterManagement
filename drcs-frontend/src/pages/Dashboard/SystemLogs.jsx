@@ -6,7 +6,7 @@ export default function SystemLogs() {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/logs');
+      const response = await fetch('https://disastermanagement-slc5.onrender.com/api/logs');
       if (response.ok) {
         const data = await response.json();
         setLogs(data);

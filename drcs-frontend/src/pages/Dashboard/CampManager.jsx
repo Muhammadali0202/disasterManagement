@@ -7,11 +7,11 @@ export default function CampManager({ onUpdate }) {
 
   // Fetch both Camps and Locations
   const fetchData = () => {
-    fetch('http://localhost:5000/api/camps')
+    fetch('https://disastermanagement-slc5.onrender.com/api/camps')
       .then(res => res.json())
       .then(data => setCamps(data));
       
-    fetch('http://localhost:5000/api/locations')
+    fetch('https://disastermanagement-slc5.onrender.com/api/locations')
       .then(res => res.json())
       .then(data => setLocations(data));
   };
@@ -26,7 +26,7 @@ export default function CampManager({ onUpdate }) {
   const handleAddCamp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/camps', {
+      const response = await fetch('https://disastermanagement-slc5.onrender.com/api/camps', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -46,7 +46,7 @@ export default function CampManager({ onUpdate }) {
     if (!window.confirm("Are you sure? Volunteers at this camp will become unassigned.")) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/camps/${camp_id}`, {
+      const response = await fetch(`https://disastermanagement-slc5.onrender.com/api/camps/${camp_id}`, {
         method: 'DELETE'
       });
       if (response.ok) {
