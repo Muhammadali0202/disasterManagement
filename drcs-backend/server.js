@@ -2,19 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
+app.use(express.json());
 
 // 1. Initialize the App
 const app = express();
 app.use(cors({
     origin: [
-        'https://disaster-management-liard-omega.vercel.app', // Your live Vercel frontend
-        'http://localhost:5173', // Keep local access for when you test on your computer
-        'http://localhost:3000'
+        'https://disaster-management-liard-omega.vercel.app', // Vercel Cloud Frontend
+        'http://localhost:5173',                              // Local Docker Frontend
+        'http://localhost:3000'                               // Fallback local port
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
 
 // 2. Connect to MySQL Database
 const pool = mysql.createPool({
@@ -217,6 +218,7 @@ app.post('/api/inventory', async (req, res) => {
         res.status(500).json({ error: 'Failed to update inventory' });
     }
 });
+
 // --- GET: System Audit Logs ---
 app.get('/api/logs', async (req, res) => {
     try {
@@ -228,6 +230,7 @@ app.get('/api/logs', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch audit logs' }); 
     }
 });
+
 // ==========================================
 //               START SERVER
 // ==========================================
