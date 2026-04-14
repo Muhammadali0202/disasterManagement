@@ -1,12 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2/promise');
+import express, { json } from 'express';
+import cors from 'cors';
+import { createPool } from 'mysql2/promise';
+const app = express();
 require('dotenv').config();
 
-app.use(express.json());
+app.use(json());
 
 // 1. Initialize the App
-const app = express();
 app.use(cors({
     origin: [
         'https://disaster-management-liard-omega.vercel.app', // Vercel Cloud Frontend
@@ -19,7 +19,7 @@ app.use(cors({
 }));
 
 // 2. Connect to MySQL Database
-const pool = mysql.createPool({
+const pool = createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
