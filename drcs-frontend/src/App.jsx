@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthPortal from './AuthPortal';
 // TODO: Import your Dashboard component here once it's ready!
-// import Dashboard from './Dashboard'; 
+import Dashboard from './Dashboard'; 
 
 function App() {
   // 1. State to track the logged-in user
@@ -47,22 +47,9 @@ function App() {
         
         // --- TEMPORARY DASHBOARD PLACEHOLDER ---
         // Replace this entire div with your actual <Dashboard /> component!
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-          <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-lg w-full">
-            <h1 className="text-3xl font-black text-gray-800 mb-2">Command Center</h1>
-            <p className="text-gray-600 mb-8">Logged in as: <span className="font-bold text-indigo-600">{user}</span></p>
-            
-            <button 
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 font-bold w-full shadow-md transition duration-200"
-            >
-              Secure Logout
-            </button>
-          </div>
-        </div>
-        // --- END PLACEHOLDER ---
         
-        // <Dashboard user={user} onLogout={handleLogout} /> 
+        
+        <Dashboard user={user} onLogout={handleLogout} /> 
       ) : (
         <AuthPortal onLoginSuccess={(username) => setUser(username)} />
       )}
