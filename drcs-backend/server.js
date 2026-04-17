@@ -9,9 +9,7 @@ app.use(express.json());
 // 1. Initialize the App
 app.use(cors({
     origin: [
-        'https://disaster-management-hoo2.vercel.app',
-        'https://disaster-management-a3j9.vercel.app',
-        'https://disaster-management-liard-omega.vercel.app', // Vercel Cloud Frontend
+        'https://disaster-management-hoo2.vercel.app',// Vercel Cloud Frontend
         'http://localhost:5173',                              // Local Docker Frontend
         'http://localhost:3000'                               // Fallback local port
     ],
