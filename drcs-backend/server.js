@@ -4,7 +4,7 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 const app = express();
 
-app.use(json());
+app.use(express.json());
 
 // 1. Initialize the App
 app.use(cors({
