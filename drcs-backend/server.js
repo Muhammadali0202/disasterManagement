@@ -19,7 +19,7 @@ app.use(cors({
 }));
 
 // 2. Connect to MySQL Database
-const pool = createPool({
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
