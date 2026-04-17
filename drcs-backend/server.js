@@ -1,7 +1,7 @@
-import 'dotenv/config';    
-import express, { json } from 'express';
-import cors from 'cors';
-import { createPool } from 'mysql2/promise';
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const mysql = require('mysql2/promise');
 const app = express();
 
 app.use(json());
