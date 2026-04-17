@@ -15,7 +15,7 @@ export default function AuthPortal({ onLoginSuccess }) {
     
     try {
       const response = await fetch(`https://disastermanagement-jlc5.onrender.com${endpoint}`, {
-    method: 'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
@@ -24,6 +24,9 @@ export default function AuthPortal({ onLoginSuccess }) {
 
       if (response.ok) {
         if (isLogin) {
+          // --- NEW: Save the username to the browser's long-term memory ---
+          localStorage.setItem('drcs_user', data.admin.username); 
+          
           onLoginSuccess(data.admin.username); // Tell App.jsx we are logged in!
         } else {
           setMessage({ text: 'Account created! You can now log in.', type: 'text-green-600' });
@@ -79,7 +82,11 @@ export default function AuthPortal({ onLoginSuccess }) {
           <div className="mt-6 text-center border-t border-gray-100 pt-6">
             <p className="text-sm text-gray-600">
               {isLogin ? "Don't have admin access? " : "Already have an account? "}
-              <button onClick={() => { setIsLogin(!isLogin); setMessage({text:'', type:''}); }} className="text-indigo-600 font-bold hover:underline">
+              <button 
+                type="button" 
+                onClick={() => { setIsLogin(!isLogin); setMessage({text:'', type:''}); }} 
+                className="text-indigo-600 font-bold hover:underline"
+              >
                 {isLogin ? 'Sign up here' : 'Log in here'}
               </button>
             </p>

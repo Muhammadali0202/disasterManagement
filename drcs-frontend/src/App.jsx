@@ -1,27 +1,70 @@
-import React, { useState } from 'react';
-import Dashboard from './pages/Dashboard/Dashboard';
-import AuthPortal from './Auth/AuthPortal';
+import React, { useState, useEffect } from 'react';
+import AuthPortal from './AuthPortal';
+// TODO: Import your Dashboard component here once it's ready!
+// import Dashboard from './Dashboard'; 
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [adminName, setAdminName] = useState('');
+  // 1. State to track the logged-in user
+  const [user, setUser] = useState(null);
+  
+  // 2. State to prevent the login screen from flashing on refresh
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleLogin = (username) => {
-    setIsAuthenticated(true);
-    setAdminName(username);
-  };
+  // --- Check local storage the moment the app loads ---
+  useEffect(() => {
+    const savedUser = localStorage.getItem('drcs_user');
+    
+    if (savedUser) {
+      // If a user is found in the browser's memory, log them in automatically
+      setUser(savedUser); 
+    }
+    
+    // We are done checking memory, turn off the loading screen
+    setIsLoading(false); 
+  }, []);
 
+  // --- Logout Function ---
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setAdminName('');
+    localStorage.removeItem('drcs_user'); // Erase the browser memory
+    setUser(null); // Boot them back to the login screen
   };
+
+  // Show a simple loading screen while checking memory
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <p className="text-white text-xl font-bold tracking-widest animate-pulse">
+          INITIALIZING DRCS...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {isAuthenticated ? (
-        <Dashboard onLogout={handleLogout} adminName={adminName} />
+      {/* If a user is logged in, show the Dashboard. Otherwise, show AuthPortal. */}
+      {user ? (
+        
+        // --- TEMPORARY DASHBOARD PLACEHOLDER ---
+        // Replace this entire div with your actual <Dashboard /> component!
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+          <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-lg w-full">
+            <h1 className="text-3xl font-black text-gray-800 mb-2">Command Center</h1>
+            <p className="text-gray-600 mb-8">Logged in as: <span className="font-bold text-indigo-600">{user}</span></p>
+            
+            <button 
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 font-bold w-full shadow-md transition duration-200"
+            >
+              Secure Logout
+            </button>
+          </div>
+        </div>
+        // --- END PLACEHOLDER ---
+        
+        // <Dashboard user={user} onLogout={handleLogout} /> 
       ) : (
-        <AuthPortal onLoginSuccess={handleLogin} />
+        <AuthPortal onLoginSuccess={(username) => setUser(username)} />
       )}
     </div>
   );
