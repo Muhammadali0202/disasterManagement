@@ -8,14 +8,8 @@ app.use(express.json());
 
 // 1. Initialize the App
 app.use(cors({
-    origin: [
-        'https://disaster-management-hoo2.vercel.app',// Vercel Cloud Frontend
-        'http://localhost:5173',                              // Local Docker Frontend
-        'http://localhost:3000'                               // Fallback local port
-    ],
+    origin: '*', // Allow all origins (for development). In production, specify your frontend URL.
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // 2. Connect to MySQL Database
