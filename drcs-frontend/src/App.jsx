@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthPortal from './Auth/AuthPortal'; // Make sure this path is correct based on your file structure
 // TODO: Import your Dashboard component here once it's ready!
-import Dashboard from './Dashboard'; 
+import Dashboard from './pages/Dashboard'; 
 
 function App() {
   // 1. State to track the logged-in user
