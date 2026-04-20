@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS volunteers (
     volunteer_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     phone VARCHAR(15) UNIQUE NOT NULL,
+    skills VARCHAR(50) DEFAULT 'General Help', 
     assigned_camp_id INT,
     assigned_disaster_id INT,
     FOREIGN KEY (assigned_camp_id) REFERENCES relief_camps(camp_id) ON DELETE SET NULL,
