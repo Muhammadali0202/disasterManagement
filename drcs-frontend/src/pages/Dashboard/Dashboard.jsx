@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import DisasterForm from './DisasterForm'; 
 import CampManager from './CampManager';
 import InventoryTracker from './InventoryTracker';
+import VolunteerForm from './VolunteerForm';
 
 export default function Dashboard({ user, onLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -20,6 +21,8 @@ export default function Dashboard({ user, onLogout }) {
         return <CampManager />;
       case 'inventory':
         return <InventoryTracker />;
+      case 'volunteers':
+        return <VolunteerForm />;
       case 'audit_logs':
         return <SystemLogs />;
       default:
@@ -65,6 +68,12 @@ export default function Dashboard({ user, onLogout }) {
                 className={`cursor-pointer transition-colors ${activeView === 'inventory' ? 'text-indigo-400' : 'hover:text-white'}`}
               >
                 Logistics & Inventory
+              </li>
+              <li 
+                onClick={() => setActiveView('volunteers')}
+                className={`cursor-pointer transition-colors ${activeView === 'volunteers' ? 'text-indigo-400' : 'hover:text-white'}`}
+              >
+                Volunteer Registry
               </li>
             </ul>
           </div>
