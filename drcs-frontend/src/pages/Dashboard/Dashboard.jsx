@@ -20,6 +20,8 @@ export default function Dashboard({ user, onLogout }) {
         return <CampManager />;
       case 'inventory':
         return <InventoryTracker />;
+      case 'audit_logs':
+        return <SystemLogs />;
       default:
         return <SystemOverviewContent />;
     }
@@ -63,6 +65,17 @@ export default function Dashboard({ user, onLogout }) {
                 className={`cursor-pointer transition-colors ${activeView === 'inventory' ? 'text-indigo-400' : 'hover:text-white'}`}
               >
                 Logistics & Inventory
+              </li>
+            </ul>
+          </div>
+          <div className="px-6 py-4 border-t border-slate-800">
+            <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-4">Security & Admin</p>
+            <ul className="space-y-4 font-medium">
+              <li 
+                onClick={() => setActiveView('audit_logs')}
+                className={`cursor-pointer transition-colors ${activeView === 'audit_logs' ? 'text-red-400' : 'hover:text-white'}`}
+              >
+                Audit Logs
               </li>
             </ul>
           </div>
