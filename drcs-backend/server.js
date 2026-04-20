@@ -98,17 +98,53 @@ app.post('/api/disasters', async (req, res) => {
 });
 
 // 2. Add a new Volunteer
-app.post('/api/volunteers', async (req, res) => {
-    const { name, phone, assigned_camp_id, assigned_disaster_id } = req.body;
+// ==========================================
+//           VOLUNTEER ROUTES
+// ==========================================
+
+// 1. GET: Fetch all active volunteers
+app.get('/api/volunteers', async (req, res) => {
     try {
-        const query = 'INSERT INTO volunteers (name, phone, assigned_camp_id, assigned_disaster_id) VALUES (?, ?, ?, ?)';
-        await pool.query(query, [name, phone, assigned_camp_id, assigned_disaster_id || null]);
+        // This JOIN connects the volunteer to their camp so we can show the Camp Name on the dashboard!
+        const query = `
+            SELECT v.volunteer_id, v.name, v.phone, v.skills, c.name AS camp_name 
+            FROM volunteers v
+            LEFT JOIN relief_camps c ON v.assigned_camp_id = c.camp_id
+        `;
+        const [rows] = await pool.query(query);
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch volunteers' });
+    }
+});
+
+// 2. POST: Add a new Volunteer
+app.post('/api/volunteers', async (req, res) => {
+    // We updated these variables to perfectly match what the React form is sending!
+    const { name, phone, skills, camp_id } = req.body; 
+    try {
+        const query = 'INSERT INTO volunteers (name, phone, skills, assigned_camp_id) VALUES (?, ?, ?, ?)';
+        await pool.query(query, [name, phone, skills, camp_id || null]);
         res.status(201).json({ message: 'Volunteer added successfully!' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to add volunteer.' });
     }
 });
+
+// 3. DELETE: Remove a Volunteer
+app.delete('/api/volunteers/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM volunteers WHERE volunteer_id = ?', [id]);
+        res.json({ message: 'Volunteer deleted successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete volunteer.' });
+    }
+});
+
 
 // 3. Add a new Relief Camp
 app.post('/api/camps', async (req, res) => {
