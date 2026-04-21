@@ -6,31 +6,42 @@ export default function SystemLogs() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Fetching from your live Aiven database via the Render backend
     fetch('https://disastermanagement-jlc5.onrender.com/api/logs')
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch logs');
+        if (!res.ok) throw new Error('Database connection failed');
         return res.json();
       })
       .then(data => {
-        setLogs(data);
-        setIsLoading(false);
+        // SAFETY CHECK: Make sure the database actually returned a list!
+        if (Array.isArray(data)) {
+          setLogs(data);
+        } else {
+          throw new Error('API did not return a valid list. Is the table missing?');
+        }
       })
       .catch(err => {
         console.error("Audit Log Error:", err);
-        setError('Could not connect to the audit database.');
+        setError('Could not connect to the audit database. Please verify the system_logs table exists.');
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   }, []);
 
-  // Helper function to format the SQL timestamp into something readable
+  // SAFETY CHECK: Wrap the date formatter in a try/catch block so bad data doesn't crash the app
   const formatDateTime = (timestamp) => {
-    if (!timestamp) return 'Unknown Time';
-    const date = new Date(timestamp);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', second: '2-digit'
-    }).format(date);
+    try {
+      if (!timestamp) return 'Unknown Time';
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return 'Invalid Date'; // Catch corrupted timestamps
+      
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).format(date);
+    } catch (e) {
+      return 'Format Error';
+    }
   };
 
   return (
@@ -63,7 +74,6 @@ export default function SystemLogs() {
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Timestamp</th>
                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Action Event</th>
-                {/* We map the columns generically in case your DB names vary slightly */}
                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider hidden md:table-cell">Details / User ID</th>
               </tr>
             </thead>

@@ -5,6 +5,7 @@ import DisasterForm from './DisasterForm';
 import CampManager from './CampManager';
 import InventoryTracker from './InventoryTracker';
 import VolunteerForm from './VolunteerForm';
+import SystemLogs from './SystemLogs';
 
 export default function Dashboard({ user, onLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
