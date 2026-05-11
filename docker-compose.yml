@@ -1,11 +1,10 @@
-version: '3.8'
-
 services:
   # 1. The MySQL Database Container
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      # CHANGED: We mapped your computer's 3307 to Docker's 3306
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: drcs_db
@@ -17,7 +16,7 @@ services:
   backend:
     build: ./drcs-backend
     ports:
-      - "5000:5000"
+      - 5001:5000
     environment:
       # Notice how DB_HOST is "db" now, not localhost! Docker handles the networking.
       DB_HOST: db
